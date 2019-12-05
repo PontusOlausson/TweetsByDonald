@@ -7,4 +7,3 @@ print("hejdå")
 print('Varför')
 
 print("detta måste funka")
-asd
