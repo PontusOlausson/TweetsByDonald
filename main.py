@@ -22,8 +22,7 @@ def main():
     group2.add_argument('-b', action='store_true', default=False, help='Use batch gradient descent')
     group2.add_argument('-mgd', action='store_true', default=False, help='Use mini-batch gradient descent')
 
-
-    if len(sys.argv[1:])==0:
+    if len(sys.argv[1:]) == 0:
         parser.print_help()
         parser.exit()
     arguments = parser.parse_args()
@@ -31,6 +30,7 @@ def main():
     DataReader(arguments.d, arguments.t, arguments.m, arguments.s, arguments.mgd)
 
     input("Press Return to finish the program...")
+
 
 if __name__ == '__main__':
     main()
