@@ -2,6 +2,7 @@
 import codecs
 import nltk
 from collections import defaultdict
+import numpy as np
 
 
 """
@@ -18,6 +19,7 @@ class TrainNB(object):
         self.Ndoc = 0
         self.Nc = defaultdict(int)
         self.bigdoc = defaultdict(list)
+        self.logprior = defaultdict(int)
 
     def compute_vocabulary(self, documents):
         vocabulary = set()
@@ -51,17 +53,12 @@ class TrainNB(object):
 
         for c in all_classes:
             N_c = float(sum(labels == c))
+            self.logprior[c] = np.log(N_c / N_docs)
 
-    def process_files(self, f):
-        with codecs.open(f, 'r', 'utf-8') as text_file:
-            text = str(text_file.read()).lower()
-        try:
-            self.tokens = nltk.word_tokenize(text)
-        except LookupError:
-            nltk.download('punkt')
-            self.tokens = nltk.word_tokenize(text)
-        for token in self.tokens:
-            self.process_token(token)
+            total_count = 0
+            for word in self.V:
+                total_count += self.word_count[c][word]
 
-    def process_token(self, token):
-        pass
+            for word in self.V:
+                count = self.word_count[c][word]
+                self.loglikelihoods[c][word] = np.log((count + 1) / (total_count + len(self.V)))
