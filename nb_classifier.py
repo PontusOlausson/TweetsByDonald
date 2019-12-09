@@ -2,6 +2,7 @@ import codecs
 import nltk
 from collections import defaultdict
 import numpy as np
+import pickle
 
 
 """
@@ -12,20 +13,32 @@ Created 2019 by Christoffer Linné and Pontus Olausson.
 
 class TrainNB(object):
     def __init__(self):
-        self.Ndoc = 0
-        self.Nc = defaultdict(int)
         self.bigdoc = defaultdict(list)
         self.logprior = defaultdict(int)
         self.word_count = {}
-        self.loglikelihoods = defaultdict(lambda: defaultdict(int))
+        self.loglikelihoods = defaultdict(lambda: defaultdict)
         self.V = set()
+
+    def write_to_file(self, path):
+        with open(path, 'wb') as fp:
+            pickle.dump(self.bigdoc, fp, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.logprior, fp, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.word_count, fp, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.V, fp, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def read_from_file(self, path):
+        with open(path, 'rb') as fp:
+            self.bigdoc = pickle.load(fp)
+            self.logprior = pickle.load(fp)
+            self.word_count = pickle.load(fp)
+            self.V = pickle.load(fp)
 
     def compute_vocabulary(self, documents):
         vocabulary = set()
 
         for doc in documents:
             for word in doc.split(" "):
-                self.V.add(word.lower())
+                vocabulary.add(word.lower())
 
         return vocabulary
 
@@ -65,7 +78,6 @@ class TrainNB(object):
     def predict(self, doc):
         sums = {
             0: 0,
-            2: 0,
             4: 0,
         }
         for c in self.bigdoc.keys():
@@ -73,6 +85,6 @@ class TrainNB(object):
             words = doc.split(" ")
             for word in words:
                 if word in self.V:
-                    sums[c] += self.loglikelihoods[c][words]
+                    sums[c] += self.loglikelihoods[c][word]
 
         return sums

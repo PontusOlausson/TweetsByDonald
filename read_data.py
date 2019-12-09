@@ -1,6 +1,7 @@
 import numpy as np
 import codecs
 import csv
+import time
 import re
 from nltk.corpus import stopwords
 
@@ -9,7 +10,8 @@ class DataReader:
 
     def __init__(self, training_file):
 
-        self.training_set = []
+        self.tweets = []
+        self.labels = []
 
         if training_file:
             self.read_and_process_data(training_file)
@@ -21,10 +23,20 @@ class DataReader:
         """
         with codecs.open(training_file, 'r', 'utf-8') as f:
             reader = csv.reader(f)
+            i = 0
+            k = 1000
+            start_time = time.time()
             for row in reader:
                 clean_tweet = self.process_tweet(row[5])
-                self.training_set.append((row[0], clean_tweet))
-        print(self.training_set)
+                self.tweets.append(clean_tweet)
+                self.labels.append(int(row[0]))
+
+                if i == k:
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    print(duration * 1600000 / k)
+                i += 1
+            print('Done!')
 
     def process_tweet(self, tweet):
         """
@@ -72,7 +84,7 @@ class DataReader:
 
 
 def main():
-    DataReader("Data/training_data_small.txt")
+    DataReader("Data/training_data.csv")
 
 
 if __name__ == "__main__":
