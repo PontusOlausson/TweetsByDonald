@@ -12,20 +12,20 @@ Created 2019 by Christoffer Linné and Pontus Olausson.
 
 
 class TrainNB(object):
-    def __init__(self, classes=None):
-        if classes is None:
-            self.classes = [0, 2, 4]
-
+    def __init__(self):
         self.Ndoc = 0
         self.Nc = defaultdict(int)
         self.bigdoc = defaultdict(list)
         self.logprior = defaultdict(int)
+        self.word_count = {}
+        self.loglikelihoods = defaultdict(lambda: defaultdict(int))
+        self.V = set()
 
     def compute_vocabulary(self, documents):
         vocabulary = set()
 
         for doc in documents:
-            for word in doc.split(""):
+            for word in doc.split(" "):
                 self.V.add(word.lower())
 
         return vocabulary
@@ -52,7 +52,7 @@ class TrainNB(object):
         self.word_count = self.count_word_in_classes()
 
         for c in all_classes:
-            N_c = float(sum(labels == c))
+            N_c = labels.count(c)
             self.logprior[c] = np.log(N_c / N_docs)
 
             total_count = 0
@@ -62,3 +62,18 @@ class TrainNB(object):
             for word in self.V:
                 count = self.word_count[c][word]
                 self.loglikelihoods[c][word] = np.log((count + 1) / (total_count + len(self.V)))
+
+    def predict(self, doc):
+        sums = {
+            0: 0,
+            2: 0,
+            4: 0,
+        }
+        for c in self.bigdoc.keys():
+            sums[c] = self.logprior[c]
+            words = doc.split(" ")
+            for word in words:
+                if word in self.V:
+                    sums[c] += self.loglikelihoods[c][words]
+
+        return sums
