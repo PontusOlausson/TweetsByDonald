@@ -39,6 +39,19 @@ class TrainNB(object):
 
         return counts
 
+    def train(self, documents, labels):
+        N_docs = len(documents)
+        self.V = self.compute_vocabulary(documents)
+
+        for x, y in zip(documents, labels):
+            self.bigdoc[y].append(x)
+
+        all_classes = set(labels)
+        self.word_count = self.count_word_in_classes()
+
+        for c in all_classes:
+            N_c = float(sum(labels == c))
+
     def process_files(self, f):
         with codecs.open(f, 'r', 'utf-8') as text_file:
             text = str(text_file.read()).lower()
