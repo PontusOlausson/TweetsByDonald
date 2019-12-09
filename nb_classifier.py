@@ -16,7 +16,7 @@ class TrainNB(object):
         self.bigdoc = defaultdict(list)
         self.logprior = defaultdict(int)
         self.word_count = {}
-        self.loglikelihoods = defaultdict(lambda: defaultdict)
+        self.loglikelihoods = {}
         self.V = set()
 
     def write_to_file(self, path):
@@ -24,6 +24,7 @@ class TrainNB(object):
             pickle.dump(self.bigdoc, fp, protocol=pickle.HIGHEST_PROTOCOL)
             pickle.dump(self.logprior, fp, protocol=pickle.HIGHEST_PROTOCOL)
             pickle.dump(self.word_count, fp, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.loglikelihoods, fp, protocol=pickle.HIGHEST_PROTOCOL)
             pickle.dump(self.V, fp, protocol=pickle.HIGHEST_PROTOCOL)
 
     def read_from_file(self, path):
@@ -31,6 +32,7 @@ class TrainNB(object):
             self.bigdoc = pickle.load(fp)
             self.logprior = pickle.load(fp)
             self.word_count = pickle.load(fp)
+            self.loglikelihoods = pickle.load(fp)
             self.V = pickle.load(fp)
 
     def compute_vocabulary(self, documents):
@@ -71,6 +73,7 @@ class TrainNB(object):
             for word in self.V:
                 total_count += self.word_count[c][word]
 
+            self.loglikelihoods[c] = {}
             for word in self.V:
                 count = self.word_count[c][word]
                 self.loglikelihoods[c][word] = np.log((count + 1) / (total_count + len(self.V)))

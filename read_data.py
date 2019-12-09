@@ -23,18 +23,20 @@ class DataReader:
         """
         with codecs.open(training_file, 'r', 'utf-8') as f:
             reader = csv.reader(f)
-            i = 0
-            k = 1000
+            i = 1
+            k = 10000
             start_time = time.time()
             for row in reader:
                 clean_tweet = self.process_tweet(row[5])
                 self.tweets.append(clean_tweet)
                 self.labels.append(int(row[0]))
 
-                if i == k:
+                if i % k == 0:
                     end_time = time.time()
                     duration = end_time - start_time
-                    print(duration * 1600000 / k)
+                    start_time = time.time()
+                    time_left = duration / k * (1600000 - i)
+                    print(time_left)
                 i += 1
             print('Done!')
 
