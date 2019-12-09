@@ -1,6 +1,7 @@
 import numpy as np
 import codecs
 import csv
+import re
 
 
 class DataReader:
@@ -28,12 +29,12 @@ class DataReader:
 
     def process_data(self, tweet):
         """
-
         :param tweet: one tweet read from the training document, only contains the body of the tweet.
-        :return: clean_tweet, tweet body with dimensionality reduced.
+        :return: tweet, tweet body with dimensionality reduced.
         """
-        clean_tweet = ""
-        return clean_tweet
+        tweet = re.sub(r'\s[^\s\w]+\s', ' ', tweet)
+        tweet = re.sub(r'\d+\s?|\n|[^\s\w]', '', tweet).rstrip().lower()
+        return tweet
 
 
 def main():
