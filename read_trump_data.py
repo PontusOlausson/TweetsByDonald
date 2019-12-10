@@ -7,9 +7,9 @@ from nltk.corpus import stopwords
 
 class TrumpDataReader:
 
-    def __init__(self, training_file):
+    def __init__(self, training_file, case="-t"):
         self.tweets = []
-        self.case = "-t"
+        self.case = case
 
         if training_file:
             self.read_and_process_data(training_file, self.case)
@@ -27,16 +27,16 @@ class TrumpDataReader:
             start_time = time.time()
             for row in reader:
                 tweet = row[0].split("§")[0]
-                print(tweet)
+                # print(tweet)
                 clean_tweet = self.process_tweet(tweet, case)
                 if clean_tweet != "":
                     self.tweets.append(clean_tweet)
-                    print(clean_tweet)
+                    # print(clean_tweet)
 
                 if i % k == 0:
                     end_time = time.time()
                     duration = end_time - start_time
-                    print(duration * 40000 / k)
+                    print(duration)
                 i += 1
             print('Done!')
 
