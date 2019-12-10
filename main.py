@@ -3,6 +3,7 @@ import sys
 from read_data import DataReader
 from nb_classifier import NBClassifier
 import numpy as np
+import operator
 
 
 def main():
@@ -19,16 +20,34 @@ def main():
         data_reader = DataReader(arguments.train)
         tweets, labels = data_reader.tweets, data_reader.labels
         nb_class.train(tweets, labels)
-        prediction = nb_class.predict(tweets[0])
+        prediction = nb_class.predict(tweets[200])
         print(prediction)
     if arguments.destination:
         nb_class.write_to_file(arguments.destination)
+
     if arguments.load:
         nb_class.read_from_file(arguments.load)
 
         data_reader = DataReader('Data/training_data_small.csv')
-        prediction = nb_class.predict(data_reader.tweets[0])
-        print(prediction)
+        tweets, labels = data_reader.tweets, data_reader.labels
+
+        confusion = np.zeros((2, 2))
+        for i in range(len(tweets)):
+            stats = nb_class.predict(data_reader.tweets[i])
+            prediction = max(stats.items(), key=operator.itemgetter(1))[0]
+            prediction = 1 if prediction == 4 else 0
+            correct = 1 if labels[i] == 4 else 0
+            confusion[prediction][correct] += 1
+
+        print('                       Real class')
+        print('                 ', end='')
+        print(' '.join('{:>8d}'.format(i) for i in range(2)))
+        for i in range(2):
+            if i == 0:
+                print('Predicted class: {:2d} '.format(i), end='')
+            else:
+                print('                 {:2d} '.format(i), end='')
+            print(' '.join('{:>8.3f}'.format(confusion[i][j]) for j in range(2)))
 
 
 if __name__ == '__main__':

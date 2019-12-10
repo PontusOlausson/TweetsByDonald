@@ -20,13 +20,12 @@ class DataReader:
         :param training_file: file to be read and processed.
         :return: void
         """
-        with codecs.open(training_file, 'r', 'utf-8') as f:
+        with codecs.open(training_file, 'r', 'latin-1') as f:
             reader = csv.reader(f, )
             i = 1
             k = 10000
             start_time = time.time()
             for row in reader:
-                print(row)
                 clean_tweet = self.process_tweet(row[5])
                 self.tweets.append(clean_tweet)
                 self.labels.append(int(row[0]))
@@ -36,7 +35,6 @@ class DataReader:
                     duration = end_time - start_time
                     start_time = time.time()
                     time_left = duration / k * (1600000 - i)
-                    #print(time_left)
                 i += 1
             print('Done!')
 
