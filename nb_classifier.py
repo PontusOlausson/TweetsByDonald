@@ -11,7 +11,7 @@ Created 2019 by Christoffer Linné and Pontus Olausson.
 """
 
 
-class TrainNB(object):
+class NBClassifier(object):
     def __init__(self):
         self.bigdoc = defaultdict(list)
         self.logprior = defaultdict(int)
