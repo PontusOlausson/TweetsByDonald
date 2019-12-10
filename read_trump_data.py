@@ -5,49 +5,52 @@ import re
 from nltk.corpus import stopwords
 
 
-class DataReader:
+class TrumpDataReader:
 
     def __init__(self, training_file):
-
         self.tweets = []
-        self.labels = []
+        self.case = "-t"
 
         if training_file:
-            self.read_and_process_data(training_file)
+            self.read_and_process_data(training_file, self.case)
 
-    def read_and_process_data(self, training_file):
+    def read_and_process_data(self, training_file, case):
         """
         :param training_file: file to be read and processed.
         :return: void
         """
         with codecs.open(training_file, 'r', 'utf-8') as f:
-            reader = csv.reader(f, )
-            i = 1
-            k = 10000
+            reader = csv.reader(f)
+            next(reader)
+            i = 0
+            k = 1000
             start_time = time.time()
             for row in reader:
-                print(row)
-                clean_tweet = self.process_tweet(row[5])
-                self.tweets.append(clean_tweet)
-                self.labels.append(int(row[0]))
+                tweet = row[0].split("§")[0]
+                print(tweet)
+                clean_tweet = self.process_tweet(tweet, case)
+                if clean_tweet != "":
+                    self.tweets.append(clean_tweet)
+                    print(clean_tweet)
 
                 if i % k == 0:
                     end_time = time.time()
                     duration = end_time - start_time
-                    start_time = time.time()
-                    time_left = duration / k * (1600000 - i)
-                    #print(time_left)
+                    print(duration * 40000 / k)
                 i += 1
             print('Done!')
 
-    def process_tweet(self, tweet):
+    def process_tweet(self, tweet, case):
         """
         :param tweet: one tweet read from the training document, only contains the body of the tweet.
         :return: tweet, tweet body with dimensionality reduced.
         """
         split_tweet = tweet.split()
+        if split_tweet[0] == "RT":
+            return ""
+
         for index in range(len(split_tweet)):
-            split_tweet[index] = self.process_token(split_tweet[index])
+            split_tweet[index] = self.process_token(split_tweet[index], case)
 
         while "" in split_tweet:
             split_tweet.remove("")
@@ -56,7 +59,7 @@ class DataReader:
 
         return tweet
 
-    def process_token(self, token):
+    def process_token(self, token, case):
         """
         Method to process a single token in a tweet
         :param token: one word from tweet
@@ -68,13 +71,16 @@ class DataReader:
         elif token[:4] == "http" or token[:4] == "www." or token[len(token)-4:] == ".com":
             token = "adress.com"
 
-        else:
-            token = re.sub(r'\s[^\s\w]+\s', ' ', token)
-            token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token).strip().lower()
+        elif 1 == 0:
+            pass
 
-            stop_words = set(stopwords.words("english"))
-            if token in stop_words:
-                token = ""
+        else:
+            if case == "-t":
+                token = re.sub(r'\s[^\s\w]+\s', ' ', token)
+                token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token).lower().strip()
+            elif case == "-lm":
+                pass
+
         return token
 
     def list_to_string(self, split_tweet):
@@ -86,7 +92,7 @@ class DataReader:
 
 
 def main():
-    DataReader("Data/training_data_small.csv")
+    TrumpDataReader("Data/tweet_data.txt")
 
 
 if __name__ == "__main__":
