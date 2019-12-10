@@ -31,7 +31,7 @@ class TrumpDataReader:
                 clean_tweet = self.process_tweet(tweet, case)
                 if clean_tweet != "":
                     self.tweets.append(clean_tweet)
-                    # print(clean_tweet)
+                    #print(clean_tweet)
 
                 if i % k == 0:
                     end_time = time.time()
