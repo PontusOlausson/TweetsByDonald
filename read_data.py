@@ -86,7 +86,7 @@ class DataReader:
 
 
 def main():
-    DataReader("Data/training_data.csv")
+    DataReader("Data/training_data_small.csv")
 
 
 if __name__ == "__main__":
