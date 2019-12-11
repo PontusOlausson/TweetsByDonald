@@ -55,17 +55,19 @@ class TrumpDataReader:
         :param tweet: one tweet read from the training document, only contains the body of the tweet.
         :return: tweet, tweet body with dimensionality reduced.
         """
-        split_tweet = nltk.word_tokenize(tweet)
-        if split_tweet[0] == "RT":
+        tokens = nltk.word_tokenize(tweet) # Gör att kontrollen för länkar inte fungerar
+
+        if tokens[0] == "RT":
             return ""
 
-        for index in range(len(split_tweet)):
-            split_tweet[index] = self.process_token(split_tweet[index], case)
+        for index in range(len(tokens)):
+            tokens[index] = self.process_token(tokens[index], case)
 
-        while "" in split_tweet:
-            split_tweet.remove("")
+        while "" in tokens:
+            tokens.remove("")
 
-        tweet = self.list_to_string(split_tweet)
+        tokens = set(tokens)
+        tweet = self.list_to_string(tokens)
 
         return tweet
 
@@ -80,9 +82,6 @@ class TrumpDataReader:
 
         elif token[:4] == "http" or token[:4] == "www." or token[len(token)-4:] == ".com":
             token = "adress.com"
-
-        elif 1 == 0:
-            pass
 
         else:
             if case == "-t":
