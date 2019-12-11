@@ -89,15 +89,15 @@ class Generator(object) :
             print("Couldn't find bigram probabilities file {}".format(filename))
             return False
 
-    def generate(self, w, n):
+    def generate(self, w):
         """
         Generates and prints n words, starting with the word w, and following the distribution
         of the language model.
         """
         output = ''
-        #w = w.lower()
 
-        for i in range(n):
+        #for i in range(n):
+        while True:
             # Can use self.unigram_count.keys() instead
             possible_words = list(self.bigram_prob[w].keys())
             probabilities = []
@@ -116,8 +116,12 @@ class Generator(object) :
                     probabilities.append(P)
                 next_w = np.random.choice(possible_words, 1, probabilities)[0]
 
+            if next_w == "TWEET_END_SIGN":
+                break
+
             output += next_w + ' '
             w = next_w
+
         print(output)
 
 
@@ -133,8 +137,8 @@ def main():
     #arguments = parser.parse_args()
 
     generator = Generator()
-    generator.read_model("trump_model.txt")
-    generator.generate("TWEET_START_SIGN", 20)
+    generator.read_model("trump_model_2.txt")
+    generator.generate("TWEET_START_SIGN")
 
 
 if __name__ == "__main__":

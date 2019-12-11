@@ -1,13 +1,9 @@
 #  -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import math
-import argparse
 import nltk
-import os
 from collections import defaultdict
 import codecs
-import json
-import requests
 from read_trump_data import TrumpDataReader
 
 """
@@ -28,13 +24,13 @@ class BigramTrainer(object):
         i = 0
         for doc in docs:
             self.last_index = -1
-            doc = "TWEET_START_SIGN " + doc
+            doc = "TWEET_START_SIGN " + doc + " TWEET_END_SIGN"
             if i % 1000 == 0:
                 print(i)
                 print(doc)
             i += 1
             try:
-                self.tokens = nltk.word_tokenize(doc) # Important that it is named self.tokens for the --check flag to work
+                self.tokens = nltk.word_tokenize(doc)
             except LookupError:
                 nltk.download('punkt')
                 self.tokens = nltk.word_tokenize(doc)
@@ -125,12 +121,12 @@ def main():
     """
     Parse command line arguments
     """
-    destination = "trump_model.txt"
+    destination = "trump_model_2.txt"
     #destination = None
     bigram_trainer = BigramTrainer()
 
-    trump_data_reader = TrumpDataReader("Data/tweet_data.txt", "-lm")
-    tweets = trump_data_reader.tweets
+    trump_data_reader = TrumpDataReader("Data/tweet_data.txt")
+    tweets = trump_data_reader.tweets_generating
 
     bigram_trainer.process_files(tweets)
     stats = bigram_trainer.stats()

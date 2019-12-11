@@ -8,7 +8,8 @@ from nltk.corpus import stopwords
 class TrumpDataReader:
 
     def __init__(self, training_file, case="-t"):
-        self.tweets = []
+        self.tweets_training = []
+        self.tweets_generating = []
         self.case = case
 
         if training_file:
@@ -28,10 +29,13 @@ class TrumpDataReader:
             for row in reader:
                 tweet = row[0].split("§")[0]
                 # print(tweet)
-                clean_tweet = self.process_tweet(tweet, case)
-                if clean_tweet != "":
-                    self.tweets.append(clean_tweet)
-                    #print(clean_tweet)
+                clean_tweet_training = self.process_tweet(tweet, "-t")
+                clean_tweet_generating = self.process_tweet(tweet, "-lm")
+                if clean_tweet_training != "":
+                    self.tweets_training.append(clean_tweet_training)
+                    self.tweets_generating.append(clean_tweet_generating)
+                    #print(clean_tweet_training)
+                    #print(clean_tweet_generating)
 
                 if i % k == 0:
                     end_time = time.time()
