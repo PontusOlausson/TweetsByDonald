@@ -35,6 +35,7 @@ class DataReader:
                     duration = end_time - start_time
                     start_time = time.time()
                     time_left = duration / k * (1600000 - i)
+                    print(time_left)
                 i += 1
             print('Done!')
 
@@ -49,6 +50,8 @@ class DataReader:
 
         while "" in split_tweet:
             split_tweet.remove("")
+
+        split_tweet = set(tweet)
 
         tweet = self.list_to_string(split_tweet)
 

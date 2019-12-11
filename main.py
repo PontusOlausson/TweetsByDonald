@@ -49,6 +49,13 @@ def main():
                 print('                 {:2d} '.format(i), end='')
             print(' '.join('{:>8.3f}'.format(confusion[i][j]) for j in range(2)))
 
+        for i in range(2):
+            recall = confusion[i, i] / sum(confusion[:, i])
+            precision = confusion[i, i] / sum(confusion[i, :])
+            print('Class %i: Recall=%0.6f, Precision=%0.6f' % (i, recall, precision))
+
+        print('Accuracy=%.06f' % ((confusion[0, 0] + confusion[1, 1]) / (np.sum(confusion))))
+
 
 if __name__ == '__main__':
     main()
