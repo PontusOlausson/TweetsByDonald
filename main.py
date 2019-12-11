@@ -5,6 +5,8 @@ from nb_classifier import NBClassifier
 import numpy as np
 import operator
 
+from read_trump_data import TrumpDataReader
+
 
 def main():
     parser = argparse.ArgumentParser(description='main')
@@ -56,6 +58,28 @@ def main():
             print('Class %i: Recall=%0.6f, Precision=%0.6f' % (i, recall, precision))
 
         print('Accuracy=%.06f' % ((confusion[0, 0] + confusion[1, 1]) / (np.sum(confusion))))
+
+    if arguments.classify:
+        trump_data_reader = TrumpDataReader(arguments.classify)
+        tweets = trump_data_reader.tweets_training
+
+        nb_class.read_from_file('params.p')
+
+        index = []
+
+        for i in range(len(tweets)):
+            stats = nb_class.predict(tweets[i])
+            prediction = max(stats.items(), key=operator.itemgetter(1))[0]
+            prediction = 1 if prediction == 4 else 0
+
+            if prediction == 0:
+                print(tweets[i])
+            index.append(prediction)
+        positive_tweets = np.take(tweets, index, axis=0)
+
+        print(len(positive_tweets))
+
+        print(positive_tweets)
 
 
 if __name__ == '__main__':

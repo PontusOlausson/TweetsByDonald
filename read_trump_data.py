@@ -1,7 +1,10 @@
 import codecs
 import csv
+import string
 import time
 import re
+
+import nltk
 from nltk.corpus import stopwords
 
 
@@ -11,6 +14,8 @@ class TrumpDataReader:
         self.tweets_training = []
         self.tweets_generating = []
         self.case = case
+
+        self.negating = False
 
         if training_file:
             self.read_and_process_data(training_file, self.case)
@@ -27,6 +32,7 @@ class TrumpDataReader:
             k = 1000
             start_time = time.time()
             for row in reader:
+                self.negating = False
                 tweet = row[0].split("§")[0]
                 # print(tweet)
                 clean_tweet_training = self.process_tweet(tweet, "-t")
@@ -49,7 +55,7 @@ class TrumpDataReader:
         :param tweet: one tweet read from the training document, only contains the body of the tweet.
         :return: tweet, tweet body with dimensionality reduced.
         """
-        split_tweet = tweet.split()
+        split_tweet = nltk.word_tokenize(tweet)
         if split_tweet[0] == "RT":
             return ""
 
@@ -80,8 +86,26 @@ class TrumpDataReader:
 
         else:
             if case == "-t":
-                token = re.sub(r'\s[^\s\w]+\s', ' ', token)
-                token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token).lower().strip()
+                # token = re.sub(r'\s[^\s\w]+\s', ' ', token)
+                # token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token)
+
+                token = token.lower().strip()
+
+                stop_words = set(stopwords.words("english"))
+
+                if token in string.punctuation:
+                    self.negating = False
+                    return ""
+
+                if token in stop_words:
+                    return ""
+
+                if token == "n't":
+                    self.negating = True
+                    return ""
+
+                if self.negating:
+                    token = "NOT_" + token
             elif case == "-lm":
                 pass
 
