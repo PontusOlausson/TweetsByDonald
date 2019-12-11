@@ -2,6 +2,9 @@ import codecs
 import csv
 import time
 import re
+import string
+
+import nltk
 from nltk.corpus import stopwords
 
 
@@ -11,6 +14,8 @@ class DataReader:
 
         self.tweets = []
         self.labels = []
+
+        self.negating = False
 
         if training_file:
             self.read_and_process_data(training_file)
@@ -26,6 +31,8 @@ class DataReader:
             k = 10000
             start_time = time.time()
             for row in reader:
+                self.negating = False
+
                 clean_tweet = self.process_tweet(row[5])
                 self.tweets.append(clean_tweet)
                 self.labels.append(int(row[0]))
@@ -37,6 +44,8 @@ class DataReader:
                     time_left = duration / k * (1600000 - i)
                     print(time_left)
                 i += 1
+
+
             print('Done!')
 
     def process_tweet(self, tweet):
@@ -44,16 +53,17 @@ class DataReader:
         :param tweet: one tweet read from the training document, only contains the body of the tweet.
         :return: tweet, tweet body with dimensionality reduced.
         """
-        split_tweet = tweet.split()
-        for index in range(len(split_tweet)):
-            split_tweet[index] = self.process_token(split_tweet[index])
+        tokens = nltk.word_tokenize(tweet)
+        
+        for index in range(len(tokens)):
+            tokens[index] = self.process_token(tokens[index])
 
-        while "" in split_tweet:
-            split_tweet.remove("")
+        while "" in tokens:
+            tokens.remove("")
 
-        split_tweet = set(tweet)
+        tokens = set(tokens)
 
-        tweet = self.list_to_string(split_tweet)
+        tweet = self.list_to_string(tokens)
 
         return tweet
 
@@ -70,12 +80,27 @@ class DataReader:
             token = "adress.com"
 
         else:
-            token = re.sub(r'\s[^\s\w]+\s', ' ', token)
-            token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token).strip().lower()
+            # token = re.sub(r'\s[^\s\w]+\s', ' ', token)
+            # token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token)
+
+            token = token.lower().strip()
 
             stop_words = set(stopwords.words("english"))
+
+            if token in string.punctuation:
+                self.negating = False
+                return ""
+
             if token in stop_words:
-                token = ""
+                return ""
+
+            if token == "n't":
+                self.negating = True
+                return ""
+
+            if self.negating:
+                token = "NOT_" + token
+
         return token
 
     def list_to_string(self, split_tweet):
