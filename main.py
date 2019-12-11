@@ -6,6 +6,8 @@ import numpy as np
 import operator
 
 from read_trump_data import TrumpDataReader
+from bigram_trainer import BigramTrainer
+from generator import Generator
 
 
 def main():
@@ -14,6 +16,7 @@ def main():
     parser.add_argument('--destination', '-d', type=str, help='file in which to store the sentiment analysis')
     parser.add_argument('--load', '-l', type=str, help='file from which to load sentiment analysis')
     parser.add_argument('--classify', '-c', type=str, help='file from which to classify tweets')
+    parser.add_argument('--generate', '-g', type=str, help='file from which to read language model')
 
     arguments = parser.parse_args()
 
@@ -81,7 +84,23 @@ def main():
         positive_tweets = np.take(trump_data_reader.tweets_generating, pos_index)
         negative_tweets = np.take(trump_data_reader.tweets_generating, neg_index)
 
+        bigram_trainer = BigramTrainer()
 
+        bigram_trainer.process_files(positive_tweets)
+        bigram_trainer.write_to_file(bigram_trainer.stats(), "trump_model_positive.txt")
+
+        bigram_trainer.process_files(negative_tweets)
+        bigram_trainer.write_to_file(bigram_trainer.stats(), "trump_model_negative.txt")
+
+    if arguments.generate:
+        generator = Generator()
+        generator.read_model(arguments.generate)
+        print("Tweet 1:")
+        generator.generate("TWEET_START_SIGN")
+        print("Tweet 2:")
+        generator.generate("TWEET_START_SIGN")
+        print("Tweet 3:")
+        generator.generate("TWEET_START_SIGN")
 
 
 if __name__ == '__main__':

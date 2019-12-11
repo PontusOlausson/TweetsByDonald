@@ -81,6 +81,13 @@ class BigramTrainer(object):
 
         return rows_to_print
 
+    def write_to_file(self, rows_to_write, destination):
+        if destination is not None:
+            with codecs.open(destination, 'w', 'utf-8') as f:
+                print("Writing to file" + destination)
+                for row in rows_to_write:
+                    f.write(row + '\n')
+
     def __init__(self):
         """
         <p>Constructor. Processes the file <code>f</code> and builds a language model
@@ -131,10 +138,10 @@ def main():
     bigram_trainer.process_files(tweets)
     stats = bigram_trainer.stats()
 
-    if destination is not None:
-        with codecs.open(destination, 'w', 'utf-8') as f:
-            for row in stats:
-                f.write(row + '\n')
+    #if destination is not None:
+    #    with codecs.open(destination, 'w', 'utf-8') as f:
+    #        for row in stats:
+    #            f.write(row + '\n')
 
 
 #    else:
