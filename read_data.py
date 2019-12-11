@@ -45,7 +45,6 @@ class DataReader:
                     print(time_left)
                 i += 1
 
-
             print('Done!')
 
     def process_tweet(self, tweet):

@@ -11,6 +11,7 @@ def main():
     parser.add_argument('--train', '-t', type=str, help='file from which to train sentiment analysis')
     parser.add_argument('--destination', '-d', type=str, help='file in which to store the sentiment analysis')
     parser.add_argument('--load', '-l', type=str, help='file from which to load sentiment analysis')
+    parser.add_argument('--classify', '-c', type=str, help='file from which to classify tweets')
 
     arguments = parser.parse_args()
 
@@ -28,7 +29,7 @@ def main():
     if arguments.load:
         nb_class.read_from_file(arguments.load)
 
-        data_reader = DataReader('Data/training_data_small.csv')
+        data_reader = DataReader('Data/training_data_small_v.csv')
         tweets, labels = data_reader.tweets, data_reader.labels
 
         confusion = np.zeros((2, 2))
