@@ -55,7 +55,8 @@ class TrumpDataReader:
         :param tweet: one tweet read from the training document, only contains the body of the tweet.
         :return: tweet, tweet body with dimensionality reduced.
         """
-        tokens = nltk.word_tokenize(tweet) # Gör att kontrollen för länkar inte fungerar
+        # tokens = nltk.word_tokenize(tweet) # Gör att kontrollen för länkar inte fungerar
+        tokens = tweet.split()
 
         if tokens[0] == "RT":
             return ""
@@ -66,7 +67,8 @@ class TrumpDataReader:
         while "" in tokens:
             tokens.remove("")
 
-        tokens = set(tokens)
+        if case == "-t":
+            tokens = set(tokens)
         tweet = self.list_to_string(tokens)
 
         return tweet
@@ -85,26 +87,33 @@ class TrumpDataReader:
 
         else:
             if case == "-t":
-                # token = re.sub(r'\s[^\s\w]+\s', ' ', token)
-                # token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token)
 
                 token = token.lower().strip()
 
-                stop_words = set(stopwords.words("english"))
+                stop_words = set(stopwords.words("english")) # Går det snabbare om man har self.stopwords?
 
-                if token in string.punctuation:
+                # if token in string.punctuation:
+                #    self.negating = False
+                #    return ""
+
+                if any(char in token for char in ".,:;()!?"):
                     self.negating = False
-                    return ""
 
                 if token in stop_words:
                     return ""
 
-                if token == "n't":
+                if token[len(token)-3:] == "n't":
                     self.negating = True
-                    return ""
+
+                # if token == "n't":
+                #    self.negating = True
+                #    return ""
+                token = re.sub(r'\s[^\s\w]+\s', ' ', token)
+                token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token)
 
                 if self.negating:
                     token = "NOT_" + token
+
             elif case == "-lm":
                 pass
 
