@@ -65,21 +65,23 @@ def main():
 
         nb_class.read_from_file('params.p')
 
-        index = []
+        pos_index = []
+        neg_index = []
 
         for i in range(len(tweets)):
             stats = nb_class.predict(tweets[i])
             prediction = max(stats.items(), key=operator.itemgetter(1))[0]
             prediction = 1 if prediction == 4 else 0
 
-            if prediction == 0:
-                print(tweets[i])
-            index.append(prediction)
-        positive_tweets = np.take(tweets, index, axis=0)
+            if prediction == 1:
+                pos_index.append(i)
+            elif prediction == 0:
+                neg_index.append(i)
 
-        print(len(positive_tweets))
+        positive_tweets = np.take(trump_data_reader.tweets_generating, pos_index)
+        negative_tweets = np.take(trump_data_reader.tweets_generating, neg_index)
 
-        print(positive_tweets)
+
 
 
 if __name__ == '__main__':
