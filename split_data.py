@@ -28,7 +28,7 @@ def main():
 
     with codecs.open(path + "_t.csv", 'w', 'latin-1') as f:
         for row in training_data:
-            f.write(",".join(row) + "\n")
+            f.write(",".join('"' + item + '"' for item in row) + "\n")
 
     with codecs.open(path + "_v.csv", 'w', 'latin-1') as f:
         for row in validation_data:
