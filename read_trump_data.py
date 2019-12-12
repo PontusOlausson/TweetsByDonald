@@ -34,7 +34,6 @@ class TrumpDataReader:
             for row in reader:
                 self.negating = False
                 tweet = row[0].split("§")[0]
-                # print(tweet)
                 clean_tweet_training = self.process_tweet(tweet, "-t")
                 clean_tweet_generating = self.process_tweet(tweet, "-lm")
                 if clean_tweet_training != "":
@@ -131,7 +130,7 @@ class TrumpDataReader:
 
 
 def main():
-    TrumpDataReader("Data/tweet_data.txt")
+    TrumpDataReader("Data/tweet_data_small.txt")
 
 
 if __name__ == "__main__":
