@@ -32,7 +32,7 @@ def main():
 
     with codecs.open(path + "_v.csv", 'w', 'latin-1') as f:
         for row in validation_data:
-            f.write(",".join(row) + "\n")
+            f.write(",".join('"' + item + '"' for item in row) + "\n")
 
 
 if __name__ == "__main__":

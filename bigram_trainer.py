@@ -21,16 +21,31 @@ class BigramTrainer(object):
         """
         Processes the file @code{f}.
         """
-        i = 0
+        iterations = 0
         for doc in docs:
             self.last_index = -1
             doc = "TWEET_START_SIGN " + doc + " TWEET_END_SIGN"
-            if i % 1000 == 0:
-                print(i)
+            if iterations % 1000 == 0:
+                print(iterations)
                 print(doc)
-            i += 1
+            iterations += 1
             try:
-                self.tokens = nltk.word_tokenize(doc)
+                self.tokens = doc.split()
+                i = 1
+                while i < len(self.tokens)-2:
+                    # for i in range(len(self.tokens)):
+                    if self.tokens[i][0] == "@":
+                        self.tokens[i] = "@user"
+                    elif self.tokens[i][:4] == "http" or self.tokens[i][:4] == "www." or self.tokens[i][len(self.tokens[i]) - 4:] == ".com":
+                        self.tokens[i] = "adress.com"
+                    else:
+                        tokenized = nltk.word_tokenize(self.tokens[i])
+                        if len(tokenized) > 1:
+                            self.tokens.remove(self.tokens[i])
+                            for j in range(len(tokenized)):
+                                self.tokens.insert(i+j, tokenized[j])
+                    i += 1
+
             except LookupError:
                 nltk.download('punkt')
                 self.tokens = nltk.word_tokenize(doc)
@@ -132,11 +147,11 @@ def main():
     #destination = None
     bigram_trainer = BigramTrainer()
 
-    trump_data_reader = TrumpDataReader("Data/tweet_data.txt")
+    trump_data_reader = TrumpDataReader("Data/tweet_data_small.txt")
     tweets = trump_data_reader.tweets_generating
 
     bigram_trainer.process_files(tweets)
-    stats = bigram_trainer.stats()
+    # stats = bigram_trainer.stats()
 
     #if destination is not None:
     #    with codecs.open(destination, 'w', 'utf-8') as f:

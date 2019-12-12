@@ -85,12 +85,15 @@ class TrumpDataReader:
         elif token[:4] == "http" or token[:4] == "www." or token[len(token)-4:] == ".com":
             token = "adress.com"
 
+        elif token == "&amp;":
+            token = ""
+
         else:
             if case == "-t":
 
                 token = token.lower().strip()
 
-                stop_words = set(stopwords.words("english")) # Går det snabbare om man har self.stopwords?
+                stop_words = set(stopwords.words("english"))  # Går det snabbare om man har self.stopwords?
 
                 # if token in string.punctuation:
                 #    self.negating = False
