@@ -40,7 +40,7 @@ def main():
     if arguments.load:
         nb_class.read_from_file(arguments.load)
 
-    if arguments.validate:
+    if arguments.validate and (arguments.load or arguments.train):
         data_reader = DataReader('Data/training_data_small_v.csv')
         tweets, labels = data_reader.tweets, data_reader.labels
 
@@ -69,11 +69,9 @@ def main():
 
         print('Accuracy=%.06f' % ((confusion[0, 0] + confusion[1, 1]) / (np.sum(confusion))))
 
-    if arguments.classify:
+    if arguments.classify and (arguments.load or arguments.train):
         trump_data_reader = TrumpDataReader(arguments.classify)
         tweets = trump_data_reader.tweets_training
-
-        nb_class.read_from_file('params_big.p')
 
         pos_index = []
         neg_index = []
