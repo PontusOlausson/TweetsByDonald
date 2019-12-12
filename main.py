@@ -101,14 +101,6 @@ def main():
             for row in negative_tweets:
                 f.write(row + "\n")
 
-        bigram_trainer = BigramTrainer()
-
-        bigram_trainer.process_files(positive_tweets)
-        bigram_trainer.write_to_file(bigram_trainer.stats(), "trump_model_positive.txt")
-
-        bigram_trainer.process_files(negative_tweets)
-        bigram_trainer.write_to_file(bigram_trainer.stats(), "trump_model_negative.txt")
-
     if arguments.generate:
         generator = Generator()
         generator.read_model(arguments.generate)

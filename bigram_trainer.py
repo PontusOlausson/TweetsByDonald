@@ -1,5 +1,7 @@
 #  -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import argparse
 import math
 import nltk
 from collections import defaultdict
@@ -143,24 +145,21 @@ def main():
     """
     Parse command line arguments
     """
-    destination = "trump_model_2.txt"
-    #destination = None
+    parser = argparse.ArgumentParser(description='bigram_trainer')
+    parser.add_argument('--train', '-t', required=True, type=str, help='file from which to train model')
+    parser.add_argument('--destination', '-d', required=True, type=str, help='file from which to store model')
+
+    arguments = parser.parse_args()
+
     bigram_trainer = BigramTrainer()
 
-    trump_data_reader = TrumpDataReader("Data/tweet_data_small.txt")
-    tweets = trump_data_reader.tweets_generating
+    tweets = []
+    with codecs.open(arguments.train, 'r', 'utf-8') as f:
+        for row in f:
+            tweets.append(row)
 
     bigram_trainer.process_files(tweets)
-    # stats = bigram_trainer.stats()
-
-    #if destination is not None:
-    #    with codecs.open(destination, 'w', 'utf-8') as f:
-    #        for row in stats:
-    #            f.write(row + '\n')
-
-
-#    else:
-#        for row in stats: print(row)
+    bigram_trainer.write_to_file(bigram_trainer.stats(), arguments.destination)
 
 
 if __name__ == "__main__":

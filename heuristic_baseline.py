@@ -1,0 +1,2 @@
+class HeuristicBaseline(object):
+    pass
