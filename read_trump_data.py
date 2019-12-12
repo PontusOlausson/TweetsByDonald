@@ -26,14 +26,13 @@ class TrumpDataReader:
         :return: void
         """
         with codecs.open(training_file, 'r', 'utf-8') as f:
-            reader = csv.reader(f)
-            next(reader)
+            f.readline()  # formatting line
             i = 0
             k = 1000
             start_time = time.time()
-            for row in reader:
+            for row in f:
                 self.negating = False
-                tweet = row[0].split("§")[0]
+                tweet = row.split("§")[0]
                 # print(tweet)
                 clean_tweet_training = self.process_tweet(tweet, "-t")
                 clean_tweet_generating = self.process_tweet(tweet, "-lm")

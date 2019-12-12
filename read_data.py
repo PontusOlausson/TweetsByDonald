@@ -1,8 +1,7 @@
 import codecs
 import csv
-import time
-import re
 import string
+import time
 
 import nltk
 from nltk.corpus import stopwords

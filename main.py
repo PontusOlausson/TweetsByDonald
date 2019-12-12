@@ -1,4 +1,5 @@
 import argparse
+import codecs
 import sys
 from read_data import DataReader
 from nb_classifier import NBClassifier
@@ -11,12 +12,18 @@ from generator import Generator
 
 
 def main():
+
     parser = argparse.ArgumentParser(description='main')
-    parser.add_argument('--train', '-t', type=str, help='file from which to train sentiment analysis')
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--train', '-t', type=str, help='file from which to train sentiment analysis')
+    group.add_argument('--load', '-l', type=str, help='file from which to load sentiment analysis')
+
     parser.add_argument('--destination', '-d', type=str, help='file in which to store the sentiment analysis')
-    parser.add_argument('--load', '-l', type=str, help='file from which to load sentiment analysis')
+
     parser.add_argument('--classify', '-c', type=str, help='file from which to classify tweets')
     parser.add_argument('--generate', '-g', type=str, help='file from which to read language model')
+    parser.add_argument('--validate', '-v', type=str, help='file from which to validate sentiment analysis')
 
     arguments = parser.parse_args()
 
@@ -26,14 +33,14 @@ def main():
         data_reader = DataReader(arguments.train)
         tweets, labels = data_reader.tweets, data_reader.labels
         nb_class.train(tweets, labels)
-        prediction = nb_class.predict(tweets[200])
-        print(prediction)
+
     if arguments.destination:
         nb_class.write_to_file(arguments.destination)
 
     if arguments.load:
         nb_class.read_from_file(arguments.load)
 
+    if arguments.validate:
         data_reader = DataReader('Data/training_data_small_v.csv')
         tweets, labels = data_reader.tweets, data_reader.labels
 
@@ -66,7 +73,7 @@ def main():
         trump_data_reader = TrumpDataReader(arguments.classify)
         tweets = trump_data_reader.tweets_training
 
-        nb_class.read_from_file('params.p')
+        nb_class.read_from_file('params_big.p')
 
         pos_index = []
         neg_index = []
@@ -83,6 +90,16 @@ def main():
 
         positive_tweets = np.take(trump_data_reader.tweets_generating, pos_index)
         negative_tweets = np.take(trump_data_reader.tweets_generating, neg_index)
+
+        path = arguments.classify[:arguments.classify.find('.')]
+
+        with codecs.open(path + "_positive.txt", 'w', 'UTF-8') as f:
+            for row in positive_tweets:
+                f.write(row + "\n")
+
+        with codecs.open(path + "_negative.txt", 'w', 'UTF-8') as f:
+            for row in negative_tweets:
+                f.write(row + "\n")
 
         bigram_trainer = BigramTrainer()
 
