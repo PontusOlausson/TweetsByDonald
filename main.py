@@ -39,11 +39,14 @@ def main():
 
     if arguments.load:
         nb_class.read_from_file(arguments.load)
+        print('Loaded parameters from %s' % arguments.load)
 
     if arguments.validate and (arguments.load or arguments.train):
-        data_reader = DataReader('Data/training_data_small_v.csv')
+        print('Reading data from %s to validate' % arguments.validate)
+        data_reader = DataReader(arguments.validate)
         tweets, labels = data_reader.tweets, data_reader.labels
 
+        print('Done reading, starting validation')
         confusion = np.zeros((2, 2))
         for i in range(len(tweets)):
             stats = nb_class.predict(data_reader.tweets[i])

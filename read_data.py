@@ -14,6 +14,8 @@ class DataReader:
         self.tweets = []
         self.labels = []
 
+        self.unprocessed_tweet = []
+
         self.negating = False
 
         if training_file:
@@ -35,6 +37,7 @@ class DataReader:
                 clean_tweet = self.process_tweet(row[5])
                 self.tweets.append(clean_tweet)
                 self.labels.append(int(row[0]))
+                self.unprocessed_tweet.append(row[5])
 
                 if i % k == 0:
                     end_time = time.time()

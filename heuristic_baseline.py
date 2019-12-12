@@ -1,6 +1,8 @@
 import argparse
 import codecs
 import operator
+import re
+
 import numpy as np
 
 from read_data import DataReader
@@ -22,23 +24,33 @@ class HeuristicBaseline(object):
 
     def classify(self, validation_path):
         data_reader = DataReader(validation_path)
-        tweets, labels = data_reader.tweets, data_reader.labels
+        tweets, labels = data_reader.unprocessed_tweet, data_reader.labels
 
         confusion = np.zeros((2, 2))
+
+        eq = 0
         for i in range(len(tweets)):
             n_negative = 0
             n_positive = 0
 
             split_tweet = tweets[i].split()
-            for token in split_tweet:
+            for tweet in split_tweet:
+                token = tweet.lower().strip()
+                token = re.sub(r'\s[^\s\w]+\s', ' ', token)
+                token = re.sub(r'\d+\s?|\n|[^\s\w]', '', token)
+
                 if token in self.negative_words:
                     n_negative += 1
                 if token in self.positive_words:
                     n_positive += 1
 
-            prediction = 0
-            if n_positive > n_negative:
-                prediction = 1
+            if n_negative == n_positive == 0:
+                print(split_tweet)
+                eq += 1
+
+            prediction = 1
+            if n_negative > n_positive:
+                prediction = 0
 
             correct = 1 if labels[i] == 4 else 0
             confusion[prediction][correct] += 1
@@ -59,6 +71,7 @@ class HeuristicBaseline(object):
             print('Class %i: Recall=%0.6f, Precision=%0.6f' % (i, recall, precision))
 
         print('Accuracy=%.06f' % ((confusion[0, 0] + confusion[1, 1]) / (np.sum(confusion))))
+        print(eq / np.sum(confusion))
 
 
 def main():
