@@ -92,11 +92,11 @@ class DataReader:
                 self.negating = False
                 return ""
 
-            if token in stop_words:
+            if token in ["n't", "not", "no", "never"]:
+                self.negating = True
                 return ""
 
-            if token == "n't":
-                self.negating = True
+            if token in stop_words:
                 return ""
 
             if self.negating:

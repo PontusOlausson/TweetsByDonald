@@ -1,5 +1,0 @@
-1.
-Splitta data till träningsdata och validationdata.
-
-2.
-read_data ändrad för att ändra både http: och https: till address.com
