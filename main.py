@@ -16,14 +16,16 @@ def main():
     parser = argparse.ArgumentParser(description='main')
 
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--train', '-t', type=str, help='file from which to train sentiment analysis')
-    group.add_argument('--load', '-l', type=str, help='file from which to load sentiment analysis')
+    group.add_argument('--train', '-t', type=str, help='file from which to train sentiment classification')
+    group.add_argument('--load', '-l', type=str, help='file from which to load sentiment classification')
 
-    parser.add_argument('--destination', '-d', type=str, help='file in which to store the sentiment analysis')
+    parser.add_argument('--destination', '-d', type=str, help='file in which to store the sentiment classification')
 
     parser.add_argument('--classify', '-c', type=str, help='file from which to classify tweets')
     parser.add_argument('--generate', '-g', type=str, help='file from which to read language model')
-    parser.add_argument('--validate', '-v', type=str, help='file from which to validate sentiment analysis')
+    parser.add_argument('--validate', '-v', type=str, help='file from which to validate sentiment classification')
+
+    parser.add_argument('--test', '-test', type=str, help='file from which to test sentiment classification')
 
     arguments = parser.parse_args()
 
