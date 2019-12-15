@@ -1,4 +1,6 @@
 import codecs
+import operator
+
 import nltk
 from collections import defaultdict
 import numpy as np
@@ -35,7 +37,7 @@ class NBClassifier(object):
             self.loglikelihoods = pickle.load(fp)
             self.V = pickle.load(fp)
 
-    def compute_vocabulary(self, documents):
+    def generate_vocabulary(self, documents):
         vocabulary = set()
 
         for doc in documents:
@@ -56,38 +58,35 @@ class NBClassifier(object):
         return counts
 
     def train(self, documents, labels):
-        N_docs = len(documents)
-        self.V = self.compute_vocabulary(documents)
+        n_docs = len(documents)
+        self.V = self.generate_vocabulary(documents)
 
-        for x, y in zip(documents, labels):
-            self.bigdoc[y].append(x)
+        for i in range(n_docs):
+            self.bigdoc[labels[i]].append(documents[i])
 
-        all_classes = set(labels)
+        classes = set(labels)
         self.word_count = self.count_word_in_classes()
 
-        for c in all_classes:
-            N_c = labels.count(c)
-            self.logprior[c] = np.log(N_c / N_docs)
+        for c in classes:
+            n_class = labels.count(c)
+            self.logprior[c] = np.log(n_class / n_docs)
 
             total_count = 0
             for word in self.V:
-                total_count += self.word_count[c][word]
+                total_count += self.word_count[c, word]
 
             self.loglikelihoods[c] = {}
             for word in self.V:
-                count = self.word_count[c][word]
-                self.loglikelihoods[c][word] = np.log((count + 1) / (total_count + len(self.V)))
+                count = self.word_count[c, word]
+                self.loglikelihoods[c, word] = np.log((count + 1) / (total_count + len(self.V)))
 
     def predict(self, doc):
-        sums = {
-            0: 0,
-            4: 0,
-        }
+        probabilities = defaultdict()
         for c in self.bigdoc.keys():
-            sums[c] = self.logprior[c]
+            probabilities[c] = self.logprior[c]
             words = doc.split(" ")
             for word in words:
                 if word in self.V:
-                    sums[c] += self.loglikelihoods[c][word]
+                    probabilities[c] += self.loglikelihoods[c][word]
 
-        return sums
+        return max(probabilities.items(), key=operator.itemgetter(1))[0]

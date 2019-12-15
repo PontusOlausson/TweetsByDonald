@@ -51,8 +51,7 @@ def main():
         print('Done reading, starting validation')
         confusion = np.zeros((2, 2))
         for i in range(len(tweets)):
-            stats = nb_class.predict(data_reader.tweets[i])
-            prediction = max(stats.items(), key=operator.itemgetter(1))[0]
+            prediction = nb_class.predict(data_reader.tweets[i])
             prediction = 1 if prediction == 4 else 0
             correct = 1 if labels[i] == 4 else 0
             confusion[prediction][correct] += 1
@@ -82,8 +81,7 @@ def main():
         neg_index = []
 
         for i in range(len(tweets)):
-            stats = nb_class.predict(tweets[i])
-            prediction = max(stats.items(), key=operator.itemgetter(1))[0]
+            prediction = nb_class.predict(tweets[i])
             prediction = 1 if prediction == 4 else 0
 
             if prediction == 1:
